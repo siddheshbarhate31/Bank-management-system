@@ -11,6 +11,7 @@ class UserTypeProfile(Resource):
 
 
     def post(self):
+        """Add a user"""
         try:
             userdata = request.get_json()
             result = user_type_schema.validate(userdata)
@@ -18,7 +19,7 @@ class UserTypeProfile(Resource):
                 return {
                            "message": "Missing or sending incorrect data to create an activity. {}".format(result)
                        }, 400
-            user = UserType(id=userdata['id'],
+            user = UserType(user_id=userdata['user_id'],
                             user_type=userdata['user_type'])
             db.session.add(user)
             db.session.commit()
