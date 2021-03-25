@@ -1,0 +1,4 @@
+.idea/
+bank.log
+venv/
+app/__pycache__/
