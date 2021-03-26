@@ -108,11 +108,11 @@ class UserData(Resource):
                                          status=status.HTTP_200_OK)
             return response.success_response()
 
-    def delete(self, id):
+    def delete(self, user_id):
 
         """Delete the user"""
 
-        user = User.query.get(id)
+        user = User.query.get(user_id)
         if user:
             if user.is_deleted == 1:
                 logger.info("User is already deleted")
