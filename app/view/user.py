@@ -39,8 +39,6 @@ class UserProfile(Resource):
                                      status=status.HTTP_201_CREATED)
         return response.success_response()
 
-
-
     def get(self):
 
         """Provides the data of all the users in the user table"""

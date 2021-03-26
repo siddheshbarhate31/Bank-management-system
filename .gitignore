@@ -1,0 +1,8 @@
+.idea/
+bank.log
+venv/
+app/__pycache__/
+common/__pycache__/
+model/__pycache__/
+view/__pycachce__/
+Schema/__pycache__/
