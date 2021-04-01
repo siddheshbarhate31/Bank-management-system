@@ -19,7 +19,7 @@ class UserProfile(Resource):
         userdata = request.get_json()
         result = user_schema.validate(userdata)
         if result:
-            logger.exception("Missing or sending incorrect data to create an activity")
+            logger.exception(result)
             response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
                                          success=False, status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
@@ -64,11 +64,11 @@ class UserData(Resource):
 
     """UserData for GET(single user), PUT(update user), DELETE(delete user)"""
 
-    def get(self, user_id):
+    def get(self, id):
 
         """Gives the data of single user with selected user_id """
 
-        user = User.query.filter(User.id == user_id, User.is_deleted == 0).first()
+        user = User.query.filter(User.id == id, User.is_deleted == 0).first()
         output = user_schema.dump(user)
         logger.info('User data returned successfully')
         if user:
@@ -81,7 +81,7 @@ class UserData(Resource):
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
-    def put(self, user_id):
+    def put(self, id):
 
         """Update the user data """
 
@@ -92,7 +92,7 @@ class UserData(Resource):
             response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-        user = User.query.filter(User.id == user_id, User.is_deleted == 0).first()
+        user = User.query.filter(User.id == id, User.is_deleted == 0).first()
         if user:
             user.first_name = data.get('first_name', user.first_name)
             user.last_name = data.get('last_name', user.last_name)
@@ -108,11 +108,11 @@ class UserData(Resource):
                                          status=status.HTTP_200_OK)
             return response.success_response()
 
-    def delete(self, user_id):
+    def delete(self, id):
 
         """Delete the user"""
 
-        user = User.query.get(user_id)
+        user = User.query.get(id)
         if user:
             if user.is_deleted == 1:
                 logger.info("User is already deleted")
