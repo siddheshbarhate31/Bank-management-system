@@ -18,7 +18,8 @@ class UserSchema(ma.Schema):
 
         """ Exposed fields """
 
-        fields = ('first_name', 'last_name', 'address', 'mobile_number', ' email_id', 'password', 'user_type_id')
+        fields = ('id', 'first_name', 'last_name', 'address', 'mobile_number', 'email_id', 'password',
+                  'user_type_id', 'created_on')
         unknown = INCLUDE
         load_instance = True
 
@@ -31,7 +32,6 @@ class UserTypeSchema(ma.Schema):
 
     """Adding Schema validations to the UserType"""
 
-    id = fields.Int(required=True)
     user_type = fields.Str(required=True, validate=Length(max=20))
 
     class Meta:

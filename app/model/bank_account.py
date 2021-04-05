@@ -12,7 +12,7 @@ class BankAccount(db.Model):
     deleted = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
     account_type_id = db.Column(db.Integer, db.ForeignKey('AccountType.id'))
-    branch_id = db.Column(db.Integer, db.ForeignKey('BranchDetails.branch_id'))
+    branch_id = db.Column(db.Integer, db.ForeignKey('BranchDetails.id'))
     created_on = db.Column(db.DateTime, server_default=db.func.now())
 
     def __init__(self, account_number, is_active, deleted, user_id, account_type_id, branch_id):
@@ -33,8 +33,7 @@ class AccountType(db.Model):
     account_type = db.Column(db.String(120), nullable=False)
     bank_account = db.relationship('BankAccount', backref='AccountType')
 
-    def __init__(self, id, account_type):
-        self.id = id
+    def __init__(self, account_type):
         self.account_type = account_type
 
 
@@ -43,7 +42,7 @@ class BranchDetails(db.Model):
     """Create table BranchDetails in the database"""
 
     __tablename__ = 'BranchDetails'
-    branch_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     branch_address = db.Column(db.String(200), nullable=False)
     bank_account = db.relationship('BankAccount', backref='BranchDetails')
 
