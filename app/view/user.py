@@ -44,7 +44,6 @@ class UserProfile(Resource):
                                          success=False, status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
-
     def get(self):
 
         """Provides the data of all the users in the user table"""
