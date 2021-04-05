@@ -3,7 +3,7 @@ from app import db
 
 class User(db.Model):
 
-    """ Create table user in the database """
+    """ Create table User in the database """
 
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +15,8 @@ class User(db.Model):
     password = db.Column(db.String(120), unique=True)
     is_deleted = db.Column(db.Integer)
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserType.id'))
+    created_on = db.Column(db.DateTime, server_default=db.func.now())
+    bank_account = db.relationship('BankAccount', backref='User', lazy=True)
 
     def __init__(self, first_name, last_name, address, mobile_number, email_id, password, is_deleted, user_type_id):
         self.first_name = first_name
@@ -36,6 +38,6 @@ class UserType(db.Model):
     user_type = db.Column(db.String(120), nullable=False)
     user = db.relationship('User', backref='UserType')
 
-    def __init__(self, user_id, user_type):
-        self.id = user_id
+    def __init__(self, user_type):
         self.user_type = user_type
+

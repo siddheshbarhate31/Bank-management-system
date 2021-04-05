@@ -1,10 +1,10 @@
 from app import ma
 from marshmallow.validate import Length, Regexp
-from marshmallow import fields, validate, INCLUDE
+from marshmallow import fields, INCLUDE
 
 
 class UserSchema(ma.Schema):
-    """Adding the Schema validations to the user """
+    """Adding the Schema validations to the User """
 
     first_name = fields.Str(required=True, validate=Length(min=2, max=100))
     last_name = fields.Str(required=True, validate=Length(min=2, max=100))
@@ -18,7 +18,8 @@ class UserSchema(ma.Schema):
 
         """ Exposed fields """
 
-        fields = ('first_name', 'last_name', 'address', 'mobile_number', ' email_id', 'password', 'user_type_id')
+        fields = ('id', 'first_name', 'last_name', 'address', 'mobile_number', 'email_id', 'password',
+                  'user_type_id', 'created_on')
         unknown = INCLUDE
         load_instance = True
 
@@ -31,8 +32,7 @@ class UserTypeSchema(ma.Schema):
 
     """Adding Schema validations to the UserType"""
 
-    id = fields.Int(required=True)
-    user_type = fields.Str(required=True, validate=[validate.Length(min=5, max=20)])
+    user_type = fields.Str(required=True, validate=Length(max=20))
 
     class Meta:
 
