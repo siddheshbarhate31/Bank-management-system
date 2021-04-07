@@ -18,7 +18,8 @@ class BankAccountDetails(Resource):
             result = bank_account_schema.validate(account_data)
             if result:
                 logger.exception(result)
-                response = ResponseGenerator(data={}, message=result, success=False, status=status.HTTP_400_BAD_REQUEST)
+                response = ResponseGenerator(data={}, message=result, success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             branch_id = account_data['branch_id']
             random_number = generate_random_number(7)
@@ -126,7 +127,6 @@ class BankAccountData(Resource):
             response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
 
     def delete(self, id):
 

@@ -14,6 +14,7 @@ class BankAccount(db.Model):
     account_type_id = db.Column(db.Integer, db.ForeignKey('AccountType.id'))
     branch_id = db.Column(db.Integer, db.ForeignKey('BranchDetails.id'))
     created_on = db.Column(db.DateTime, server_default=db.func.now())
+    account_transaction_detail = db.relationship('AccountTransactionDetails', backref='BankAccount')
 
     def __init__(self, account_number, is_active, deleted, user_id, account_type_id, branch_id):
         self.account_number = account_number
