@@ -47,14 +47,15 @@ class FundTransferSchema(ma.Schema):
 
     """Adding the Schema validations to the FundTransfer """
 
-    source = fields.String(required=True, validate=Length(min=2, max=100))
-    destination = fields.String(required=True, validate=Length(min=2, max=100))
+    from_account = fields.Int(required=True)
+    to_account = fields.Int(required=True)
+    transaction_amount = fields.Int(required=True)
 
     class Meta:
 
         """ Exposed fields """
 
-        fields = ('id', 'source', 'destination')
+        fields = ('id', 'from_account', 'to_account', 'transaction_amount')
         unknown = INCLUDE
         load_instance = True
 

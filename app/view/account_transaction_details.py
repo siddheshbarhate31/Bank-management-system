@@ -21,10 +21,12 @@ class AccountTransactionInfo(Resource):
                 response = ResponseGenerator(data={}, message=result, success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
+
             account = AccountTransactionDetails(transaction_amount=account_transaction_data['transaction_amount'],
                                                 bank_account_id=account_transaction_data['bank_account_id'],
                                                 transaction_type_id=account_transaction_data['transaction_type_id'],
-                                                fund_id=account_transaction_data['fund_id'])
+                                                fund_id=account_transaction_data['fund_id'],
+                                                transaction_status=account_transaction_data['transaction_status'])
             db.session.add(account)
             db.session.commit()
             output = account_transaction_detail_schema.dump(account)

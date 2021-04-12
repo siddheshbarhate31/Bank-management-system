@@ -12,12 +12,14 @@ class AccountTransactionDetails(db.Model):
     bank_account_id = db.Column(db.Integer, db.ForeignKey('BankAccount.id'))
     transaction_type_id = db.Column(db.Integer, db.ForeignKey('TransactionType.id'))
     fund_id = db.Column(db.Integer, db.ForeignKey('FundTransfer.id'))
+    transaction_status = db.Column(db.String(120), nullable=False)
 
-    def __init__(self, transaction_amount, bank_account_id, transaction_type_id, fund_id):
+    def __init__(self, transaction_amount, bank_account_id, transaction_type_id, fund_id, transaction_status):
         self.transaction_amount = transaction_amount
         self.bank_account_id = bank_account_id
         self.transaction_type_id = transaction_type_id
         self.fund_id = fund_id
+        self.transaction_status = transaction_status
 
 
 class TransactionType(db.Model):
@@ -39,11 +41,11 @@ class FundTransfer(db.Model):
 
     __tablename__ = 'FundTransfer'
     id = db.Column(db.Integer, primary_key=True)
-    source = db.Column(db.String(120), nullable=False)
-    destination = db.Column(db.String(120), nullable=False)
+    from_account = db.Column(db.Integer, nullable=False)
+    to_account = db.Column(db.Integer, nullable=False)
     account_transaction_detail = db.relationship('AccountTransactionDetails', backref='FundTransfer')
 
-    def __init__(self, source, destination):
-        self.source = source
-        self.destination = destination
+    def __init__(self, from_account, to_account):
+        self.from_account = from_account
+        self.to_account = to_account
 

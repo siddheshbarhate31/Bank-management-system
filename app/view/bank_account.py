@@ -28,6 +28,7 @@ class BankAccountDetails(Resource):
             account = BankAccount(account_number=account_number,
                                   is_active=1,
                                   deleted=0,
+                                  balance=account_data['balance'],
                                   user_id=account_data['user_id'],
                                   account_type_id=account_data['account_type_id'],
                                   branch_id=account_data['branch_id'])
@@ -57,6 +58,7 @@ class BankAccountDetails(Resource):
                 currentaccount['id'] = account.id
                 currentaccount['account_number'] = account.account_number
                 currentaccount['is_active'] = account.is_active
+                currentaccount['balance'] = account.balance
                 currentaccount['user_id'] = account.user_id
                 currentaccount['account_type_id'] = account.account_type_id
                 currentaccount['branch_id'] = account.branch_id

@@ -1,11 +1,12 @@
 from app import db
-from app.Schema.account_transaction_details_schema import fund_transfer_schema
-from app.model.account_transaction_details import FundTransfer
+from app.Schema.account_transaction_details_schema import fund_transfer_schema, account_transaction_detail_schema
+from app.model.account_transaction_details import FundTransfer, TransactionType, AccountTransactionDetails
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
 from flask_api import status
 from app.common.logging import *
+from app.model.bank_account import BankAccount
 
 
 class FundTransferInfo(Resource):
@@ -21,11 +22,30 @@ class FundTransferInfo(Resource):
                 response = ResponseGenerator(data={}, message=result, success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            fund = FundTransfer(source=fund_data['source'],
-                                destination=fund_data['destination'])
+            fund = FundTransfer(from_account=fund_data['from_account'],
+                                to_account=fund_data['to_account'])
             db.session.add(fund)
             db.session.commit()
             output = fund_transfer_schema.dump(fund)
+            from_account = BankAccount.query.filter(BankAccount.account_number == fund_data['from_account']).first()
+            to_account = BankAccount.query.filter(BankAccount.account_number == fund_data['to_account']).first()
+            transaction_type = TransactionType.query.filter(TransactionType.transaction_type == "debit").first()
+            if from_account.balance - fund_data['transaction_amount'] > 1000:
+                from_account.balance -= fund_data['transaction_amount']
+                db.session.add(from_account)
+                to_account.balance += fund_data['transaction_amount']
+                db.session.add(to_account)
+                transaction_status = "success"
+            else:
+                transaction_status = "fail"
+            account = AccountTransactionDetails(transaction_amount=fund_data['transaction_amount'],
+                                                bank_account_id=from_account.id,
+                                                transaction_type_id=transaction_type.id,
+                                                fund_id=output.get('id'),
+                                                transaction_status=transaction_status)
+            db.session.add(account)
+            db.session.commit()
+            account_transaction_detail_schema.dump(account)
             logger.info("fund transfer data successfully created")
             response = ResponseGenerator(data=output, message="fund transfer data successfully created",
                                          success=True, status=status.HTTP_201_CREATED)
@@ -44,9 +64,8 @@ class FundTransferInfo(Resource):
             output = []
             for transfer in all_fund_transfer:
                 currentfund = {}
-                currentfund['id'] = transfer.id
-                currentfund['source'] = transfer.source
-                currentfund['destination'] = transfer.destination
+                currentfund['from_account'] = transfer.from_account
+                currentfund['to_account'] = transfer.to_account
                 output.append(currentfund)
             logger.info("All fund transfer data returned successfully")
             response = ResponseGenerator(data=output, message="All fund transfer data returned successfully",
@@ -101,8 +120,8 @@ class FundTransferData(Resource):
                 return response.error_response()
             fund = FundTransfer.query.filter(FundTransfer.id == id).first()
             if fund:
-                fund.source = data.get('source', fund.source)
-                fund.destination = data.get('destination', fund.destination)
+                fund.source = data.get('from_account', fund.from_account)
+                fund.destination = data.get('to_account', fund.to_account)
                 db.session.commit()
                 output = fund_transfer_schema.dump(fund)
                 logger.info("fund transfer updated successfully")
