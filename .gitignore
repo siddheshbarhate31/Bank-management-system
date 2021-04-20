@@ -1,12 +1,5 @@
 .idea/
 bank.log
 venv/
-app/__pycache__/
-common/__pycache__/
-model/__pycache__/
-view/__pycachce__/
-Schema/__pycache__/
-app/Schema/__pycache__/
-app/view/__pycache__/
-app/model/__pycache__/
+*.pyc
 

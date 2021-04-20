@@ -4,6 +4,7 @@ from app.model.account_transaction_details import FundTransfer, TransactionType,
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
+from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 from app.model.bank_account import BankAccount
@@ -38,6 +39,9 @@ class FundTransferInfo(Resource):
                 transaction_status = "success"
             else:
                 transaction_status = "fail"
+                response = ResponseGenerator(data={}, message=transaction_status, success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             account = AccountTransactionDetails(transaction_amount=fund_data['transaction_amount'],
                                                 bank_account_id=from_account.id,
                                                 transaction_type_id=transaction_type.id,
@@ -52,8 +56,7 @@ class FundTransferInfo(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
     def get(self):
@@ -61,19 +64,19 @@ class FundTransferInfo(Resource):
         """Provides the data of all the fund transfer"""
         try:
             all_fund_transfer = FundTransfer.query.all()
-            output = []
+            fund_transfer_list = []
             for transfer in all_fund_transfer:
                 currentfund = {}
                 currentfund['from_account'] = transfer.from_account
                 currentfund['to_account'] = transfer.to_account
-                output.append(currentfund)
+                fund_transfer_list.append(currentfund)
             logger.info("All fund transfer data returned successfully")
-            response = ResponseGenerator(data=output, message="All fund transfer data returned successfully",
+            response = ResponseGenerator(data=fund_transfer_list, message="All fund transfer data returned successfully",
                                          success=True, status=status.HTTP_200_OK)
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Invalid request", success=False,
+            response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -96,13 +99,10 @@ class FundTransferData(Resource):
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
-                logger.exception("fund transfer id not found")
-                response = ResponseGenerator(data={}, message="fund transfer id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="fund transfer id not found", success=False,
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -119,34 +119,16 @@ class FundTransferData(Resource):
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             fund = FundTransfer.query.filter(FundTransfer.id == id).first()
-            if fund:
-                fund.source = data.get('from_account', fund.from_account)
-                fund.destination = data.get('to_account', fund.to_account)
-                db.session.commit()
-                output = fund_transfer_schema.dump(fund)
-                logger.info("fund transfer updated successfully")
-                response = ResponseGenerator(data=output, message="fund transfer updated successfully",
-                                             success=True, status=status.HTTP_200_OK)
-                return response.success_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
-            return response.error_response()
-
-    def delete(self, id):
-
-        """delete the fund transfer of selected fund transfer  id"""
-
-        try:
-            fund = FundTransfer.query.get(id)
-            db.session.delete(fund)
+            fund.source = data.get('from_account', fund.from_account)
+            fund.destination = data.get('to_account', fund.to_account)
             db.session.commit()
-            logger.info("fund transfer deleted successfully")
-            return "fund transfer deleted successfully"
+            output = fund_transfer_schema.dump(fund)
+            logger.info("fund transfer updated successfully")
+            response = ResponseGenerator(data=output, message="fund transfer updated successfully",
+                                         success=True, status=status.HTTP_200_OK)
+            return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="fund transfer id not found",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 

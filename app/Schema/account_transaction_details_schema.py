@@ -9,15 +9,14 @@ class AccountTransactionDetailsSchema(ma.Schema):
     bank_account_id = fields.Int(required=True)
     transaction_type_id = fields.Int(required=True)
     fund_id = fields.Int(required=True)
+    transaction_status = fields.String(required=True)
 
     class Meta:
 
         """ Exposed fields """
 
-        fields = ('transaction_amount', 'transaction_date', 'bank_account_id', 'transaction_type_id',
-                  'account_type_id', 'fund_id')
-        unknown = INCLUDE
-        load_instance = True
+        fields = ('transaction_amount', 'transaction_date', 'bank_account_id','transaction_status',
+                  'transaction_type_id', 'account_type_id', 'fund_id')
 
 
 account_transaction_detail_schema = AccountTransactionDetailsSchema()

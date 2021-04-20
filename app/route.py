@@ -26,7 +26,7 @@ API.add_resource(AccountTransactionInfo, '/account_transaction_details')
 API.add_resource(AccountTransactionData, '/account_transaction_details/<id>')
 API.add_resource(FundTransferInfo, '/fund_transfer')
 API.add_resource(FundTransferData, '/fund_transfer/<id>')
-API.add_resource(MiniStatement, '/mini_statement')
+API.add_resource(MiniStatement, '/mini_statement/<id>')
 
 
 

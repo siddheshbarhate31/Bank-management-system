@@ -4,6 +4,7 @@ from app.model.user import User
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
+from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 
@@ -40,7 +41,7 @@ class UserProfile(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
+            response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -67,7 +68,7 @@ class UserProfile(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="User id not found", success=False,
+            response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -88,13 +89,10 @@ class UserData(Resource):
                                              status=status.HTTP_200_OK)
                 return response.success_response()
             else:
-                logger.exception("User id not found")
-                response = ResponseGenerator(data={}, message="User id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="User id not found", success=False,
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -125,10 +123,9 @@ class UserData(Resource):
                 return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
+            response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
 
     def delete(self, id):
 
@@ -147,13 +144,10 @@ class UserData(Resource):
                                                  status=status.HTTP_200_OK)
                     return response.success_response()
             else:
-                logger.warning("User id not found")
-                response = ResponseGenerator(data={}, message="User id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="User id not found", success=False,
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 

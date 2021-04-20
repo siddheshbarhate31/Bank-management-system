@@ -4,6 +4,7 @@ from app.Schema.user_schema import user_type_schema
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
+from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 
@@ -31,7 +32,7 @@ class UserTypeProfile(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
+            response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
@@ -53,7 +54,7 @@ class UserTypeProfile(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Invalid data", success=False,
+            response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -74,16 +75,12 @@ class UserTypedata(Resource):
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
-                logger.exception("User type id not found")
-                response = ResponseGenerator(data={}, message="User id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="User id not found", success=False,
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
-
 
     def put(self, id):
 
@@ -96,7 +93,7 @@ class UserTypedata(Resource):
                 response = ResponseGenerator(data={}, message=result,
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            user = UserType.query.filter(UserType.id == id)
+            user = UserType.query.filter(UserType.id == id).first()
             if user:
                 user.user_type = data.get('user_type', user.user_type)
                 db.session.commit()
@@ -107,23 +104,7 @@ class UserTypedata(Resource):
                 return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
-            return response.error_response()
-
-
-    def delete(self, id):
-
-        """delete the user type of selected user type id"""
-        try:
-            user = UserType.query.get(id)
-            db.session.delete(user)
-            db.session.commit()
-            logger.info("User type data deleted successfully")
-            return "User type data deleted successfully"
-        except:
-            logger.exception("User type id not found")
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
+            response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 

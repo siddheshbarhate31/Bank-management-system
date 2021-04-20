@@ -17,7 +17,7 @@ class BankAccount(db.Model):
     balance = db.Column(db.Integer)
     account_transaction_detail = db.relationship('AccountTransactionDetails', backref='BankAccount')
 
-    def __init__(self, account_number, is_active, deleted,balance, user_id, account_type_id, branch_id):
+    def __init__(self, account_number, is_active, deleted, balance, user_id, account_type_id, branch_id):
         self.account_number = account_number
         self.is_active = is_active
         self.deleted = deleted
