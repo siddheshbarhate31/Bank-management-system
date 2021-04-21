@@ -1,7 +1,6 @@
 from app import db
 from app.Schema.bank_account_schema import bank_account_schema, generate_random_number
 from app.model.bank_account import BankAccount
-from app.model.account_transaction_details import AccountTransactionDetails
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
@@ -98,6 +97,11 @@ class BankAccountData(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
 
     def put(self, id):
 
@@ -122,6 +126,13 @@ class BankAccountData(Resource):
                 response = ResponseGenerator(data=output, message="bank account data updated successfully",
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
@@ -150,4 +161,9 @@ class BankAccountData(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
+
 

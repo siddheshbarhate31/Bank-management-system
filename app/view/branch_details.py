@@ -33,7 +33,7 @@ class BranchData(Resource):
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,
-                                         success=False, status=status.HTTP_404_NOT_FOUND)
+                                         success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -55,7 +55,7 @@ class BranchData(Resource):
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False,
-                                         status=status.HTTP_404_NOT_FOUND)
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -81,6 +81,12 @@ class BranchInfo(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
+
 
     def put(self, id):
 
@@ -102,6 +108,13 @@ class BranchInfo(Resource):
                 response = ResponseGenerator(data=output, message="Branch data updated successfully", success=True,
                                              status=status.HTTP_200_OK)
                 return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,
@@ -113,10 +126,18 @@ class BranchInfo(Resource):
         """delete the branch detail of selected branch  id"""
         try:
             branch = BranchDetails.query.get(id)
-            db.session.delete(branch)
-            db.session.commit()
-            logger.info("Branch details deleted successfully")
-            return "Branch details deleted successfully"
+            if branch:
+                db.session.delete(branch)
+                db.session.commit()
+                logger.info("Branch details deleted successfully")
+                return "Branch details deleted successfully"
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,

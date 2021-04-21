@@ -42,7 +42,7 @@ class UserProfile(Resource):
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,
-                                         success=False, status=status.HTTP_404_NOT_FOUND)
+                                         success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
     def get(self):
@@ -69,7 +69,7 @@ class UserProfile(Resource):
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False,
-                                         status=status.HTTP_404_NOT_FOUND)
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -94,6 +94,11 @@ class UserData(Resource):
             logger.exception(error.message)
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
     def put(self, id):
@@ -121,6 +126,13 @@ class UserData(Resource):
                 response = ResponseGenerator(data=output, message="User data updated successfully", success=True,
                                              status=status.HTTP_200_OK)
                 return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,
@@ -150,5 +162,11 @@ class UserData(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error,
+                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
+
 
 

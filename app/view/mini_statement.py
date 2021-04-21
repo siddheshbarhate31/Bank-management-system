@@ -30,3 +30,8 @@ class MiniStatement(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()

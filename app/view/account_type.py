@@ -80,6 +80,11 @@ class AccountTypeData(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
 
     def put(self, id):
 
@@ -101,6 +106,13 @@ class AccountTypeData(Resource):
                 response = ResponseGenerator(data=output, message="AccountType data updated successfully", success=True,
                                              status=status.HTTP_200_OK)
                 return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error,

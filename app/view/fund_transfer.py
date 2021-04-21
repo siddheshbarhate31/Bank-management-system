@@ -77,7 +77,7 @@ class FundTransferInfo(Resource):
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False,
-                                         status=status.HTTP_404_NOT_FOUND)
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -105,6 +105,11 @@ class FundTransferData(Resource):
             response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
 
     def put(self, id):
 
@@ -119,14 +124,22 @@ class FundTransferData(Resource):
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             fund = FundTransfer.query.filter(FundTransfer.id == id).first()
-            fund.source = data.get('from_account', fund.from_account)
-            fund.destination = data.get('to_account', fund.to_account)
-            db.session.commit()
-            output = fund_transfer_schema.dump(fund)
-            logger.info("fund transfer updated successfully")
-            response = ResponseGenerator(data=output, message="fund transfer updated successfully",
-                                         success=True, status=status.HTTP_200_OK)
-            return response.success_response()
+            if fund:
+                fund.source = data.get('from_account', fund.from_account)
+                fund.destination = data.get('to_account', fund.to_account)
+                db.session.commit()
+                output = fund_transfer_schema.dump(fund)
+                logger.info("fund transfer updated successfully")
+                response = ResponseGenerator(data=output, message="fund transfer updated successfully",
+                                             success=True, status=status.HTTP_200_OK)
+                return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
