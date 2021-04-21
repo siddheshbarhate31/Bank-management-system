@@ -1,6 +1,6 @@
 from app import db
-from app.model.user import UserType
-from app.Schema.user_schema import user_type_schema
+from app.Schema.account_transaction_details_schema import transaction_type_schema
+from app.model.account_transaction_details import TransactionType
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
@@ -9,26 +9,27 @@ from flask_api import status
 from app.common.logging import *
 
 
-class UserTypeProfile(Resource):
+class TransactionTypeDetails(Resource):
 
     def post(self):
 
-        """create a user type"""
+        """Add transaction type in the TransactionType table"""
+
         try:
-            userdata = request.get_json()
-            result = user_type_schema.validate(userdata)
+            transaction_data = request.get_json()
+            result = transaction_type_schema.validate(transaction_data)
             if result:
                 logger.exception(result)
-                response = ResponseGenerator(data={}, message=result,
-                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                response = ResponseGenerator(data={}, message=result, success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            user = UserType(user_type=userdata['user_type'])
-            db.session.add(user)
+            account = TransactionType(transaction_type=transaction_data['transaction_type'])
+            db.session.add(account)
             db.session.commit()
-            output = user_type_schema.dump(user)
-            logger.info("User type  successfully created")
-            response = ResponseGenerator(data=output, message="User added  successfully", success=True,
-                                         status=status.HTTP_201_CREATED)
+            output = transaction_type_schema.dump(account)
+            logger.info("transaction type details successfully created")
+            response = ResponseGenerator(data=output, message="transaction type details successfully created",
+                                         success=True, status=status.HTTP_201_CREATED)
             return response.success_response()
         except Exception as error:
             logger.exception(error)
@@ -36,20 +37,20 @@ class UserTypeProfile(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
     def get(self):
 
-        """get all the user types"""
+        """Provides the details of all the transaction type"""
+
         try:
-            all_users = UserType.query.all()
+            all_transaction_type = TransactionType.query.all()
             output = []
-            for user in all_users:
-                current_user = {}
-                current_user['id'] = user.id
-                current_user['user_type'] = user.user_type
-                output.append(current_user)
-            logger.info("All User types data returned successfully")
-            response = ResponseGenerator(data=output, message="All Users data returned successfully",
+            for transaction in all_transaction_type:
+                currenttransaction = {}
+                currenttransaction['id'] = transaction.id
+                currenttransaction['transaction_type'] = transaction.transaction_type
+                output.append(currenttransaction)
+            logger.info("All transaction type details returned successfully")
+            response = ResponseGenerator(data=output, message="All transaction type details returned successfully",
                                          success=True, status=status.HTTP_200_OK)
             return response.success_response()
         except Exception as error:
@@ -59,19 +60,21 @@ class UserTypeProfile(Resource):
             return response.error_response()
 
 
-class UserTypedata(Resource):
+class TransactionTypeData(Resource):
 
-    """UserTypeData for GET(single user type), PUT(update user type), DELETE(delete user type)"""
+    """ for TransactionTypeData GET(single transaction type detail),
+        PUT(update transaction type), DELETE(delete transaction type detail)"""
 
     def get(self, id):
 
-        """Gives the data of single user type with selected usertype id"""
+        """Gives the data of single transaction type  with selected transaction type id """
+
         try:
-            user = UserType.query.get(id)
-            output = user_type_schema.dump(user)
-            logger.info('User type data returned successfully')
-            if user:
-                response = ResponseGenerator(data=output, message="User data returned successfully",
+            transaction = TransactionType.query.filter(TransactionType.id == id).first()
+            output = transaction_type_schema.dump(transaction)
+            if transaction:
+                logger.info('transaction type returned successfully')
+                response = ResponseGenerator(data=output, message="transaction type returned successfully",
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
@@ -89,23 +92,24 @@ class UserTypedata(Resource):
 
     def put(self, id):
 
-        """Update the user type data """
+        """Update the Transaction type """
+
         try:
             data = request.get_json()
-            result = user_type_schema.validate(data)
+            result = transaction_type_schema.validate(data)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            user = UserType.query.filter(UserType.id == id).first()
-            if user:
-                user.user_type = data.get('user_type', user.user_type)
+            transaction = TransactionType.query.filter(TransactionType.id == id).first()
+            if transaction:
+                transaction.transaction_type = data.get('transaction_type', transaction.transaction_type)
                 db.session.commit()
-                output = user_type_schema.dump(user)
-                logger.info("User data updated successfully")
-                response = ResponseGenerator(data=output, message="User data updated successfully", success=True,
-                                             status=status.HTTP_200_OK)
+                output = transaction_type_schema.dump(transaction)
+                logger.info("transaction_type updated successfully")
+                response = ResponseGenerator(data=output, message="transaction_type updated successfully",
+                                             success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
                 raise IdNotFound('id not found:{}'.format(id))
@@ -119,4 +123,5 @@ class UserTypedata(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
+
 

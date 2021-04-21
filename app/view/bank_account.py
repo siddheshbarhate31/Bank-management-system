@@ -4,6 +4,7 @@ from app.model.bank_account import BankAccount
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
+from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 
@@ -18,7 +19,8 @@ class BankAccountDetails(Resource):
             result = bank_account_schema.validate(account_data)
             if result:
                 logger.exception(result)
-                response = ResponseGenerator(data={}, message=result, success=False, status=status.HTTP_400_BAD_REQUEST)
+                response = ResponseGenerator(data={}, message=result, success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             branch_id = account_data['branch_id']
             random_number = generate_random_number(7)
@@ -27,6 +29,7 @@ class BankAccountDetails(Resource):
             account = BankAccount(account_number=account_number,
                                   is_active=1,
                                   deleted=0,
+                                  balance=account_data['balance'],
                                   user_id=account_data['user_id'],
                                   account_type_id=account_data['account_type_id'],
                                   branch_id=account_data['branch_id'])
@@ -39,8 +42,7 @@ class BankAccountDetails(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -56,6 +58,7 @@ class BankAccountDetails(Resource):
                 currentaccount['id'] = account.id
                 currentaccount['account_number'] = account.account_number
                 currentaccount['is_active'] = account.is_active
+                currentaccount['balance'] = account.balance
                 currentaccount['user_id'] = account.user_id
                 currentaccount['account_type_id'] = account.account_type_id
                 currentaccount['branch_id'] = account.branch_id
@@ -67,7 +70,7 @@ class BankAccountDetails(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Sending invalid request", success=False,
+            response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
@@ -88,14 +91,16 @@ class BankAccountData(Resource):
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
-                logger.warning("bank account id not found")
-                response = ResponseGenerator(data={}, message="bank account id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="bank account id not found", success=False,
-                                         status=status.HTTP_404_NOT_FOUND)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
     def put(self, id):
@@ -121,12 +126,17 @@ class BankAccountData(Resource):
                 response = ResponseGenerator(data=output, message="bank account data updated successfully",
                                              success=True, status=status.HTTP_200_OK)
                 return response.success_response()
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
 
     def delete(self, id):
 
@@ -141,17 +151,19 @@ class BankAccountData(Resource):
                     account.deleted = 1
                     db.session.commit()
                     logger.info("bank account deleted successfully")
-                    response = ResponseGenerator(data=account, message="bank account deleted successfully", success=True,
-                                                 status=status.HTTP_200_OK)
+                    response = ResponseGenerator(data=account, message="bank account deleted successfully",
+                                                 success=True, status=status.HTTP_200_OK)
                     return response.success_response()
             else:
-                logger.warning("bank account id not found")
-                response = ResponseGenerator(data={}, message="bank account id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="bank account id not found", success=False,
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
+        except Exception as error:
+            logger.exception(error)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
+            return response.error_response()
+
 

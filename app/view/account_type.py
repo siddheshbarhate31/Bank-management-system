@@ -4,6 +4,7 @@ from app.model.bank_account import AccountType
 from flask import request
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
+from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 
@@ -31,8 +32,7 @@ class AccountTypeDetails(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to create an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
 
@@ -53,7 +53,7 @@ class AccountTypeDetails(Resource):
             return response.success_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="AccountType id not found", success=False,
+            response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
 
@@ -70,18 +70,20 @@ class AccountTypeData(Resource):
             output = account_type_schema.dump(account)
             logger.info('AccountType data returned successfully')
             if account:
-                response = ResponseGenerator(data=output, message="AccountType data returned successfully", success=True,
-                                             status=status.HTTP_200_OK)
+                response = ResponseGenerator(data=output, message="AccountType data returned successfully",
+                                             success=True, status=status.HTTP_200_OK)
                 return response.success_response()
             else:
-                logger.exception("AccountType id not found")
-                response = ResponseGenerator(data={}, message="AccountType id not found", success=False,
-                                             status=status.HTTP_404_NOT_FOUND)
-                return response.error_response()
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
+            return response.error_response()
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="AccountType id not found", success=False,
-                                         status=status.HTTP_404_NOT_FOUND)
+            response = ResponseGenerator(data={}, message=error, success=False,
+                                         status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
     def put(self, id):
@@ -104,24 +106,15 @@ class AccountTypeData(Resource):
                 response = ResponseGenerator(data=output, message="AccountType data updated successfully", success=True,
                                              status=status.HTTP_200_OK)
                 return response.success_response()
-        except Exception as error:
-            logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
-                                         success=False, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                raise IdNotFound('id not found:{}'.format(id))
+        except IdNotFound as error:
+            logger.exception(error.message)
+            response = ResponseGenerator(data={}, message=error.message, success=False,
+                                         status=status.HTTP_404_NOT_FOUND)
             return response.error_response()
-
-
-    def delete(self, id):
-
-        """delete the account type of selected account type id"""
-        try:
-            account = AccountType.query.get(id)
-            db.session.delete(account)
-            db.session.commit()
-            logger.info("account type data deleted successfully")
-            return "account type data deleted successfully"
         except Exception as error:
             logger.exception(error)
-            response = ResponseGenerator(data={}, message="Missing or sending incorrect data to update an activity",
+            response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()

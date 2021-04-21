@@ -9,12 +9,14 @@ class BankAccountSchema(ma.Schema):
     user_id = fields.Int(required=True)
     account_type_id = fields.Int(required=True)
     branch_id = fields.Int(required=True)
+    balance = fields.Int(required=True)
 
     class Meta:
 
         """ Exposed fields """
 
-        fields = ('account_number', 'is_active', 'deleted', 'user_id', 'account_type_id', 'branch_id', 'created_on')
+        fields = ('account_number', 'is_active', 'deleted', 'balance', 'user_id', 'account_type_id', 'branch_id',
+                  'created_on', 'balance')
         unknown = INCLUDE
         load_instance = True
 
