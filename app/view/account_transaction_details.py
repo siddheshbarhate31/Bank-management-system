@@ -1,5 +1,6 @@
 from app import db
-from app.Schema.account_transaction_details_schema import account_transaction_detail_schema, account_transaction_details_schema
+from app.Schema.account_transaction_details_schema import account_transaction_detail_schema, \
+    account_transaction_details_schema
 from app.model.account_transaction_details import AccountTransactionDetails
 from app.model.bank_account import BankAccount
 from flask import request
@@ -9,6 +10,9 @@ from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 from sqlalchemy import desc
+from app.model.account_transaction_details import TransactionType
+from app.model.account_transaction_details import FundTransfer
+from app.Schema.account_transaction_details_schema import fund_transfer_schema
 
 
 class AccountTransactionInfo(Resource):
@@ -18,23 +22,43 @@ class AccountTransactionInfo(Resource):
         """Add account transaction details in the AccountTransactionDetails table"""
         try:
             account_transaction_data = request.get_json()
-            result = account_transaction_detail_schema.validate(account_transaction_data)
+            result = account_transaction_detail_schema.validate(account_transaction_data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result, success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-
+            account = BankAccount.query.filter(BankAccount.id == account_transaction_data['bank_account_id']).first()
+            transaction_type = TransactionType.query.filter(TransactionType.id == account_transaction_data['transaction_type_id']).first()
+            if transaction_type.transaction_type == "debit":
+                if account.balance - account_transaction_data['transaction_amount'] > 1000:
+                    account.balance -= account_transaction_data['transaction_amount']
+                    db.session.add(account)
+                    transaction_status = "Amount is been debited from your account successfully"
+            elif transaction_type.transaction_type == "credit":
+                account.balance += account_transaction_data['transaction_amount']
+                db.session.add(account)
+                transaction_status = "Amount is been credited to your account successfully"
+            else:
+                response = ResponseGenerator(data={}, message="Transaction Failed",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            fund = FundTransfer(from_account=account.account_number,
+                                to_account=None)
+            db.session.add(fund)
+            db.session.commit()
+            output = fund_transfer_schema.dump(fund)
             account = AccountTransactionDetails(transaction_amount=account_transaction_data['transaction_amount'],
                                                 bank_account_id=account_transaction_data['bank_account_id'],
                                                 transaction_type_id=account_transaction_data['transaction_type_id'],
-                                                fund_id=account_transaction_data['fund_id'],
-                                                transaction_status=account_transaction_data['transaction_status'])
+                                                fund_id=output.get('id'),
+                                                transaction_status=transaction_status)
             db.session.add(account)
             db.session.commit()
-            output = account_transaction_detail_schema.dump(account)
+            account_transaction = account_transaction_detail_schema.dump(account)
             logger.info("Account transaction details successfully created")
-            response = ResponseGenerator(data=output, message="Account transaction details successfully created",
+            response = ResponseGenerator(data=account_transaction,
+                                         message="Account transaction details successfully created",
                                          success=True, status=status.HTTP_201_CREATED)
             return response.success_response()
         except Exception as error:
@@ -98,8 +122,6 @@ class AccountTransactionData(Resource):
             response = ResponseGenerator(data={}, message=error, success=False,
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
-
 
     def put(self, id):
 

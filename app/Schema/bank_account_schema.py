@@ -1,7 +1,9 @@
 from app import ma
-from marshmallow.validate import Length
+from marshmallow.validate import Length, Range, Regexp
 from marshmallow import fields, INCLUDE
 from random import randint
+
+name_string = '^[a-zA-Z]*$'
 
 
 class BankAccountSchema(ma.Schema):
@@ -9,7 +11,7 @@ class BankAccountSchema(ma.Schema):
     user_id = fields.Int(required=True)
     account_type_id = fields.Int(required=True)
     branch_id = fields.Int(required=True)
-    balance = fields.Int(required=True)
+    balance = fields.Int(required=True, validate=Range(min=1000, max=50000, error="Amount greater than 1000"))
 
     class Meta:
 
@@ -35,7 +37,7 @@ class AccountTypeSchema(ma.Schema):
     """Adding the Schema validations to the AccountType """
 
     id = fields.Int(required=True)
-    account_type = fields.String(required=True, validate=Length(min=2, max=100))
+    account_type = fields.String(required=True, validate=(Length(max=20), Regexp(name_string)))
 
     class Meta:
 
@@ -53,7 +55,7 @@ accounts_type_schema = AccountTypeSchema(many=True)
 class BranchDetailsSchema(ma.Schema):
     """Adding the Schema validations to the BranchDetails """
 
-    branch_address = fields.Str(required=True, validate=Length(min=2, max=100))
+    branch_address = fields.Str(required=True, validate=Length(max=100))
 
     class Meta:
 
