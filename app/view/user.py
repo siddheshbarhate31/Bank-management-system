@@ -7,6 +7,7 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from app.Schema.user_schema import if_email_id_exist, if_mobile_no_exist, if_password_exist
 
 
 class UserProfile(Resource):
@@ -22,7 +23,22 @@ class UserProfile(Resource):
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
-                                             success=False, status=status.HTTP_404_NOT_FOUND)
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            if if_email_id_exist(userdata['email_id']):
+                logger.warning("Email_id is already taken")
+                response = ResponseGenerator(data={}, message="Email_id is already taken",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            if if_mobile_no_exist(userdata['mobile_number']):
+                logger.warning("Mobile number is already taken")
+                response = ResponseGenerator(data={}, message="Mobile number is already taken",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            if if_password_exist(userdata['password']):
+                logger.warning("Password is already taken")
+                response = ResponseGenerator(data={}, message="Password is already taken",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             user = User(first_name=userdata['first_name'],
                         last_name=userdata['last_name'],

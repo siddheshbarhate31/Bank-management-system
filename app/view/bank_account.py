@@ -7,6 +7,10 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from app.model.account_transaction_details import FundTransfer
+from app.Schema.account_transaction_details_schema import fund_transfer_schema
+from app.model.account_transaction_details import AccountTransactionDetails
+from app.Schema.account_transaction_details_schema import account_transaction_detail_schema
 
 
 class BankAccountDetails(Resource):
@@ -35,6 +39,19 @@ class BankAccountDetails(Resource):
                                   branch_id=account_data['branch_id'])
             db.session.add(account)
             db.session.commit()
+            fund = FundTransfer(from_account=account.account_number,
+                                to_account=None)
+            db.session.add(fund)
+            db.session.commit()
+            output = fund_transfer_schema.dump(fund)
+            account = AccountTransactionDetails(transaction_amount=account.balance,
+                                                bank_account_id=account.id,
+                                                transaction_type_id=2,
+                                                fund_id=output.get('id'),
+                                                transaction_status="Account is created successfully")
+            db.session.add(account)
+            db.session.commit()
+            account_transaction_detail_schema.dump(account)
             output = bank_account_schema.dump(account)
             logger.info("Account data successfully created")
             response = ResponseGenerator(data=output, message="Account data successfully created", success=True,
@@ -44,7 +61,6 @@ class BankAccountDetails(Resource):
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
 
     def get(self):
 
@@ -120,6 +136,7 @@ class BankAccountData(Resource):
                 account.user_id = data.get('user_id', account.user_id)
                 account.account_type_id = data.get('account_type_id', account.account_type_id)
                 account.branch_id = data.get('branch_id', account.branch_id)
+                account.balance = data.get('balance', account.balance)
                 db.session.commit()
                 output = bank_account_schema.dump(account)
                 logger.info("bank account data updated successfully")

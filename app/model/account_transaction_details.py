@@ -41,8 +41,8 @@ class FundTransfer(db.Model):
 
     __tablename__ = 'FundTransfer'
     id = db.Column(db.Integer, primary_key=True)
-    from_account = db.Column(db.Integer, nullable=False)
-    to_account = db.Column(db.Integer, nullable=False)
+    from_account = db.Column(db.String(10), nullable=False)
+    to_account = db.Column(db.String(10))
     account_transaction_detail = db.relationship('AccountTransactionDetails', backref='FundTransfer')
 
     def __init__(self, from_account, to_account):

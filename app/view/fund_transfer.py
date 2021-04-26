@@ -36,9 +36,9 @@ class FundTransferInfo(Resource):
                 db.session.add(from_account)
                 to_account.balance += fund_data['transaction_amount']
                 db.session.add(to_account)
-                transaction_status = "success"
+                transaction_status = "transaction successful"
             else:
-                transaction_status = "fail"
+                transaction_status = "transaction failed"
                 response = ResponseGenerator(data={}, message=transaction_status, success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
