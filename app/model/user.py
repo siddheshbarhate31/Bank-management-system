@@ -12,7 +12,7 @@ class User(db.Model):
     address = db.Column(db.String(120), unique=False)
     mobile_number = db.Column(db.String(10), unique=True)
     email_id = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(120))
     is_deleted = db.Column(db.Integer)
     user_type_id = db.Column(db.Integer, db.ForeignKey('UserType.id'))
     created_on = db.Column(db.DateTime, server_default=db.func.now())

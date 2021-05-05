@@ -29,7 +29,16 @@ class FundTransferInfo(Resource):
             db.session.commit()
             output = fund_transfer_schema.dump(fund)
             from_account = BankAccount.query.filter(BankAccount.account_number == fund_data['from_account']).first()
+            if not from_account:
+                response = ResponseGenerator(data={}, message="Invalid Account number, from_account", success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             to_account = BankAccount.query.filter(BankAccount.account_number == fund_data['to_account']).first()
+            if not to_account:
+                response = ResponseGenerator(data={}, message="Invalid Account number, to_account",
+                                             success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             transaction_type = TransactionType.query.filter(TransactionType.transaction_type == "debit").first()
             if from_account.balance - fund_data['transaction_amount'] > 1000:
                 from_account.balance -= fund_data['transaction_amount']
@@ -117,7 +126,7 @@ class FundTransferData(Resource):
 
         try:
             data = request.get_json()
-            result = fund_transfer_schema.validate(data)
+            result = fund_transfer_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,

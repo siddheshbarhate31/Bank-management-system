@@ -11,6 +11,8 @@ from app.model.account_transaction_details import FundTransfer
 from app.Schema.account_transaction_details_schema import fund_transfer_schema
 from app.model.account_transaction_details import AccountTransactionDetails
 from app.Schema.account_transaction_details_schema import account_transaction_detail_schema
+from app.model.user import User
+from app.model.bank_account import AccountType, BranchDetails
 
 
 class BankAccountDetails(Resource):
@@ -30,6 +32,21 @@ class BankAccountDetails(Resource):
             random_number = generate_random_number(7)
             account_number = str(branch_id).zfill(3) + str(random_number)
             logger.debug(account_number)
+            user_id = User.query.filter(User.id == account_data['user_id']).first()
+            if not user_id:
+                response = ResponseGenerator(data={}, message="Invalid user id given",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            account_type_id = AccountType.query.filter(AccountType.id == account_data['account_type_id']).first()
+            if not account_type_id:
+                response = ResponseGenerator(data={}, message="Invalid account type id given",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            branch_id = BranchDetails.query.filter(BranchDetails.id == account_data['branch_id']).first()
+            if not branch_id:
+                response = ResponseGenerator(data={}, message="Invalid branch id given",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             account = BankAccount(account_number=account_number,
                                   is_active=1,
                                   deleted=0,
@@ -48,7 +65,7 @@ class BankAccountDetails(Resource):
                                                 bank_account_id=account.id,
                                                 transaction_type_id=2,
                                                 fund_id=output.get('id'),
-                                                transaction_status="Account is created successfully")
+                                                transaction_status="Success")
             db.session.add(account)
             db.session.commit()
             account_transaction_detail_schema.dump(account)
@@ -124,7 +141,7 @@ class BankAccountData(Resource):
         """Update the bank account data """
         try:
             data = request.get_json()
-            result = bank_account_schema.validate(data)
+            result = bank_account_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,

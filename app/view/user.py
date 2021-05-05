@@ -1,13 +1,32 @@
 from app import db
+import bcrypt
 from app.Schema.user_schema import user_schema
-from app.model.user import User
-from flask import request
+from app.model.user import User, UserType
 from flask_restful import Resource
 from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
-from app.Schema.user_schema import if_email_id_exist, if_mobile_no_exist, if_password_exist
+from app.Schema.user_schema import if_email_id_exist, if_mobile_no_exist
+from functools import wraps
+from flask_jwt_extended import decode_token
+from flask import request
+
+
+def custom_validator(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        #jwt_data = decode_token(encoded_token='access_token')
+        token = request.headers.get('Authorization')
+        resp = decode_token(token)
+        logger.debug(resp)
+        if not token:
+            response = ResponseGenerator(data={}, message="Token Missing",
+                                         success=False, status=status.HTTP_401_UNAUTHORIZED)
+            return response.error_response()
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 class UserProfile(Resource):
@@ -35,18 +54,19 @@ class UserProfile(Resource):
                 response = ResponseGenerator(data={}, message="Mobile number is already taken",
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            if if_password_exist(userdata['password']):
-                logger.warning("Password is already taken")
-                response = ResponseGenerator(data={}, message="Password is already taken",
+            usertype = UserType.query.filter(UserType.id == userdata['user_type_id']).first()
+            if not usertype:
+                response = ResponseGenerator(data={}, message="Invalid usertype",
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
+            hashed = bcrypt.hashpw(userdata['password'].encode('utf-8'), bcrypt.gensalt())
             user = User(first_name=userdata['first_name'],
                         last_name=userdata['last_name'],
                         address=userdata['address'],
                         mobile_number=userdata['mobile_number'],
                         email_id=userdata['email_id'],
                         is_deleted=0,
-                        password=userdata['password'],
+                        password=hashed,
                         user_type_id=userdata['user_type_id'])
             db.session.add(user)
             db.session.commit()
@@ -93,6 +113,7 @@ class UserData(Resource):
 
     """UserData for GET(single user), PUT(update user), DELETE(delete user)"""
 
+    @custom_validator
     def get(self, id):
 
         """Gives the data of single user with selected user_id """
@@ -101,7 +122,8 @@ class UserData(Resource):
             output = user_schema.dump(user)
             logger.info('User data returned successfully')
             if user:
-                response = ResponseGenerator(data=output, message="User data returned successfully", success=True,
+                response = ResponseGenerator(data=output, message="User data returned successfully",
+                                             success=True,
                                              status=status.HTTP_200_OK)
                 return response.success_response()
             else:
@@ -122,19 +144,21 @@ class UserData(Resource):
         """Update the user data """
         try:
             data = request.get_json()
-            result = user_schema.validate(data)
+            result = user_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
-                response = ResponseGenerator(data={}, message=result, success=False, status=status.HTTP_400_BAD_REQUEST)
+                response = ResponseGenerator(data={}, message=result, success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             user = User.query.filter(User.id == id, User.is_deleted == 0).first()
+            hashed = bcrypt.hashpw(data.get('password', user.password).encode('utf-8'), bcrypt.gensalt())
             if user:
                 user.first_name = data.get('first_name', user.first_name)
                 user.last_name = data.get('last_name', user.last_name)
                 user.address = data.get('address', user.address)
                 user.mobile_number = data.get('mobile_number', user.mobile_number)
                 user.email_id = data.get('email_id', user.email_id)
-                user.password = data.get('password', user.password)
+                user.password = hashed
                 user.user_type_id = data.get('user_type_id', user.user_type_id)
                 db.session.commit()
                 output = user_schema.dump(user)

@@ -35,7 +35,6 @@ class AccountTypeDetails(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
     def get(self):
 
         """Provides the data of all the accountTypes"""
@@ -91,7 +90,7 @@ class AccountTypeData(Resource):
         """Update the account type data """
         try:
             data = request.get_json()
-            result = account_type_schema.validate(data)
+            result = account_type_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,

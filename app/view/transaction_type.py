@@ -96,7 +96,7 @@ class TransactionTypeData(Resource):
 
         try:
             data = request.get_json()
-            result = transaction_type_schema.validate(data)
+            result = transaction_type_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,

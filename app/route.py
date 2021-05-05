@@ -9,6 +9,8 @@ from app.view.account_transaction_details import AccountTransactionInfo, Account
 from app.view.transaction_type import TransactionTypeDetails, TransactionTypeData
 from app.view.fund_transfer import FundTransferInfo, FundTransferData
 from app.view.mini_statement import MiniStatement
+from app.view.login_logout import Login
+from app.view.login_logout import Logout
 
 API.add_resource(UserProfile, '/user')
 API.add_resource(UserData, '/user/<id>')
@@ -27,6 +29,8 @@ API.add_resource(AccountTransactionData, '/account_transaction_details/<id>')
 API.add_resource(FundTransferInfo, '/fund_transfer')
 API.add_resource(FundTransferData, '/fund_transfer/<id>')
 API.add_resource(MiniStatement, '/mini_statement/<id>')
+API.add_resource(Login, '/login')
+API.add_resource(Logout, '/logout')
 
 
 

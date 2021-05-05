@@ -36,7 +36,6 @@ class UserTypeProfile(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
     def get(self):
 
         """get all the user types"""
@@ -92,7 +91,7 @@ class UserTypedata(Resource):
         """Update the user type data """
         try:
             data = request.get_json()
-            result = user_type_schema.validate(data)
+            result = user_type_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
