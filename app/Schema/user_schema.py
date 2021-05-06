@@ -14,7 +14,7 @@ class UserSchema(ma.Schema):
     last_name = fields.Str(required=True, validate=(Length(max=50), Regexp(name_string)))
     address = fields.Str(required=True, validate=(Length(max=100), Regexp(address_string)))
     mobile_number = fields.String(required=True, validate=(Regexp('^[789]\d{9}$'), Length(equal=10)))
-    email_id = fields.Email(required=True, validate=Regexp('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'))
+    email_id = fields.Email(required=True)
     password = fields.Str(required=True, validate=Regexp('[A-Za-z0-9@#$%^&+=]{8,}'))
     user_type_id = fields.Int(strict=True, required=True)
 
@@ -24,7 +24,6 @@ class UserSchema(ma.Schema):
 
         fields = ('id', 'first_name', 'last_name', 'address', 'mobile_number', 'email_id', 'password',
                   'user_type_id', 'created_on')
-
 
 
 def if_email_id_exist(email_id):
@@ -54,5 +53,3 @@ class UserTypeSchema(ma.Schema):
 
 user_type_schema = UserTypeSchema()
 users_type_schema = UserSchema(many=True)
-
-

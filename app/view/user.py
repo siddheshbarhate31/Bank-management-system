@@ -16,7 +16,6 @@ from flask import request
 def custom_validator(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
-        #jwt_data = decode_token(encoded_token='access_token')
         token = request.headers.get('Authorization')
         resp = decode_token(token)
         logger.debug(resp)
@@ -207,6 +206,3 @@ class UserData(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
-
-

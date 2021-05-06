@@ -7,7 +7,6 @@ from app.common.ResponseGenerator import ResponseGenerator
 from flask_api import status
 from app.common.logging import *
 from app import db
-from app import jwt
 from datetime import timezone
 from datetime import datetime
 from flask_jwt_extended import get_jwt
@@ -19,8 +18,8 @@ class Login(Resource):
 
     def post(self):
         try:
-            user_email_id = request.json.get('email_id', None)
-            password = request.json.get('password', None)
+            user_email_id = request.json.get('email_id')
+            password = request.json.get('password')
             if not user_email_id:
                 logger.warning("Missing user email id")
                 response = ResponseGenerator(data={}, message="Email Missing",
@@ -58,12 +57,6 @@ class Login(Resource):
 
 class Logout(Resource):
 
-    @jwt.token_in_blocklist_loader
-    def check_if_token_revoked(jwt_header, jwt_payload):
-        jti = jwt_payload["jti"]
-        token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-        return token is not None
-
     @jwt_required()
     def delete(self):
         try:
@@ -80,16 +73,3 @@ class Logout(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
-
-
-
-
-
-
-
-
-
-
-
-

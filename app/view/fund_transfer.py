@@ -9,6 +9,9 @@ from flask_api import status
 from app.common.logging import *
 from app.model.bank_account import BankAccount
 
+transaction_type_1 = "debit"
+transaction_type_2 = "credit"
+
 
 class FundTransferInfo(Resource):
 
@@ -39,7 +42,8 @@ class FundTransferInfo(Resource):
                                              success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            transaction_type = TransactionType.query.filter(TransactionType.transaction_type == "debit").first()
+            transaction_type = TransactionType.query.filter(
+                TransactionType.transaction_type == transaction_type_1).first()
             if from_account.balance - fund_data['transaction_amount'] > 1000:
                 from_account.balance -= fund_data['transaction_amount']
                 db.session.add(from_account)
@@ -153,4 +157,3 @@ class FundTransferData(Resource):
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-

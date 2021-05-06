@@ -31,8 +31,3 @@ API.add_resource(FundTransferData, '/fund_transfer/<id>')
 API.add_resource(MiniStatement, '/mini_statement/<id>')
 API.add_resource(Login, '/login')
 API.add_resource(Logout, '/logout')
-
-
-
-
-

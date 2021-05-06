@@ -48,4 +48,3 @@ class FundTransfer(db.Model):
     def __init__(self, from_account, to_account):
         self.from_account = from_account
         self.to_account = to_account
-

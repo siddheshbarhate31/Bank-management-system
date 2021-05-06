@@ -14,6 +14,9 @@ from app.model.account_transaction_details import TransactionType
 from app.model.account_transaction_details import FundTransfer
 from app.Schema.account_transaction_details_schema import fund_transfer_schema
 
+transaction_type_1 = "debit"
+transaction_type_2 = "credit"
+
 
 class AccountTransactionInfo(Resource):
 
@@ -32,7 +35,7 @@ class AccountTransactionInfo(Resource):
                 BankAccount.id == account_transaction_data['bank_account_id']).first()
             transaction_type = TransactionType.query.filter(
                 TransactionType.id == account_transaction_data['transaction_type_id']).first()
-            if transaction_type.transaction_type == "debit":
+            if transaction_type.transaction_type == transaction_type_1:
                 if account.balance - account_transaction_data['transaction_amount'] > 1000:
                     account.balance -= account_transaction_data['transaction_amount']
                     db.session.add(account)
@@ -42,7 +45,7 @@ class AccountTransactionInfo(Resource):
                     response = ResponseGenerator(data={}, message=transaction_status,
                                                  success=False, status=status.HTTP_400_BAD_REQUEST)
                     return response.error_response()
-            elif transaction_type.transaction_type == "credit":
+            elif transaction_type.transaction_type == transaction_type_2:
                 if account_transaction_data['transaction_amount'] > 50000 or account_transaction_data['transaction_amount'] < 1000:
                     transaction_status = "Fail"
                     response = ResponseGenerator(data={}, message=transaction_status,
@@ -179,5 +182,3 @@ class AccountTransactionData(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
-
