@@ -13,10 +13,16 @@ from sqlalchemy import desc
 from app.model.account_transaction_details import TransactionType
 from app.model.account_transaction_details import FundTransfer
 from app.Schema.account_transaction_details_schema import fund_transfer_schema
+from flask_jwt_extended import jwt_required
+
+
+transaction_type_1 = "debit"
+transaction_type_2 = "credit"
 
 
 class AccountTransactionInfo(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add account transaction details in the AccountTransactionDetails table"""
@@ -28,26 +34,47 @@ class AccountTransactionInfo(Resource):
                 response = ResponseGenerator(data={}, message=result, success=False,
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
-            account = BankAccount.query.filter(BankAccount.id == account_transaction_data['bank_account_id']).first()
-            transaction_type = TransactionType.query.filter(TransactionType.id == account_transaction_data['transaction_type_id']).first()
-            if transaction_type.transaction_type == "debit":
+            account = BankAccount.query.filter(
+                BankAccount.id == account_transaction_data['bank_account_id']).first()
+            transaction_type = TransactionType.query.filter(
+                TransactionType.id == account_transaction_data['transaction_type_id']).first()
+            if transaction_type.transaction_type == transaction_type_1:
                 if account.balance - account_transaction_data['transaction_amount'] > 1000:
                     account.balance -= account_transaction_data['transaction_amount']
                     db.session.add(account)
-                    transaction_status = "Amount is been debited from your account successfully"
-            elif transaction_type.transaction_type == "credit":
+                    transaction_status = "Success"
+                else:
+                    transaction_status = "Fail"
+                    response = ResponseGenerator(data={}, message=transaction_status,
+                                                 success=False, status=status.HTTP_400_BAD_REQUEST)
+                    return response.error_response()
+            elif transaction_type.transaction_type == transaction_type_2:
+                if account_transaction_data['transaction_amount'] > 50000 or account_transaction_data['transaction_amount'] < 1000:
+                    transaction_status = "Fail"
+                    response = ResponseGenerator(data={}, message=transaction_status,
+                                                 success=False, status=status.HTTP_400_BAD_REQUEST)
+                    return response.error_response()
+
                 account.balance += account_transaction_data['transaction_amount']
                 db.session.add(account)
-                transaction_status = "Amount is been credited to your account successfully"
-            else:
-                response = ResponseGenerator(data={}, message="Transaction Failed",
-                                             success=False, status=status.HTTP_400_BAD_REQUEST)
-                return response.error_response()
+                transaction_status = "Success"
             fund = FundTransfer(from_account=account.account_number,
                                 to_account=None)
             db.session.add(fund)
             db.session.commit()
             output = fund_transfer_schema.dump(fund)
+            transaction_type_id = TransactionType.query.filter(
+                TransactionType.id == account_transaction_data['transaction_type_id']).first()
+            if not transaction_type_id:
+                response = ResponseGenerator(data={}, message="Invalid transaction_type_id given",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            bank_account_id = BankAccount.query.filter(
+                BankAccount.id == account_transaction_data['Bank_account_id']).first()
+            if not bank_account_id:
+                response = ResponseGenerator(data={}, message="Invalid bank_account_id given",
+                                             success=False, status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             account = AccountTransactionDetails(transaction_amount=account_transaction_data['transaction_amount'],
                                                 bank_account_id=account_transaction_data['bank_account_id'],
                                                 transaction_type_id=account_transaction_data['transaction_type_id'],
@@ -66,6 +93,7 @@ class AccountTransactionInfo(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the details of all the account transactions"""
@@ -98,6 +126,7 @@ class AccountTransactionData(Resource):
     """AccountTransactionData for GET(account transaction), PUT(update account transaction),
        DELETE(delete account transaction)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the detail of account transaction of selected bank account id """
@@ -123,12 +152,13 @@ class AccountTransactionData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the account transaction detail """
         try:
             data = request.get_json()
-            result = account_transaction_detail_schema.validate(data)
+            result = account_transaction_detail_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
@@ -158,5 +188,3 @@ class AccountTransactionData(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
-

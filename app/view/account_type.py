@@ -7,10 +7,11 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class AccountTypeDetails(Resource):
-
+    @jwt_required()
     def post(self):
 
         """Create account_type in the AccountType table"""
@@ -34,7 +35,6 @@ class AccountTypeDetails(Resource):
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-
 
     def get(self):
 
@@ -91,7 +91,7 @@ class AccountTypeData(Resource):
         """Update the account type data """
         try:
             data = request.get_json()
-            result = account_type_schema.validate(data)
+            result = account_type_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,

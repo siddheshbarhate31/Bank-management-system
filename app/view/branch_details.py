@@ -7,10 +7,12 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class BranchData(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add branch_details in the BranchDetails table"""
@@ -22,7 +24,8 @@ class BranchData(Resource):
                 response = ResponseGenerator(data={}, message=result,
                                              success=False, status=status.HTTP_404_NOT_FOUND)
                 return response.error_response()
-            branch = BranchDetails(branch_address=branch_data['branch_address'])
+            branch = BranchDetails(branch_name=branch_data['branch_name'],
+                                   branch_address=branch_data['branch_address'])
             db.session.add(branch)
             db.session.commit()
             output = branch_detail_schema.dump(branch)
@@ -36,7 +39,7 @@ class BranchData(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the branch details"""
@@ -46,6 +49,7 @@ class BranchData(Resource):
             for branch in all_branch_details:
                 currentbranch = {}
                 currentbranch['id'] = branch.id
+                currentbranch['branch_name'] = branch.branch_name
                 currentbranch['branch_address'] = branch.branch_address
                 output.append(currentbranch)
             logger.info("All branch data returned successfully")
@@ -63,6 +67,7 @@ class BranchInfo(Resource):
 
     """BranchInfo for GET(single branch detail), PUT(update branch detail), DELETE(delete branch detail)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single branch detail with selected branch id """
@@ -87,13 +92,13 @@ class BranchInfo(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
+    @jwt_required()
     def put(self, id):
 
         """Update the Branch Data """
         try:
             data = request.get_json()
-            result = branch_detail_schema.validate(data)
+            result = branch_detail_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
@@ -101,6 +106,7 @@ class BranchInfo(Resource):
                 return response.error_response()
             branch = BranchDetails.query.filter(BranchDetails.id == id).first()
             if branch:
+                branch.branch_name = data.get('branch_name', branch.branch_name)
                 branch.branch_address = data.get('branch_address', branch.branch_address)
                 db.session.commit()
                 output = branch_detail_schema.dump(branch)
@@ -121,6 +127,7 @@ class BranchInfo(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def delete(self, id):
 
         """delete the branch detail of selected branch  id"""
@@ -143,4 +150,3 @@ class BranchInfo(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-

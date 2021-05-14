@@ -7,10 +7,12 @@ from app.Schema.account_transaction_details_schema import account_transaction_de
 from flask_api import status
 from app.common.logging import *
 from sqlalchemy import desc
+from flask_jwt_extended import jwt_required
 
 
 class MiniStatement(Resource):
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the detail of first 10 transactions of selected bank account  id """

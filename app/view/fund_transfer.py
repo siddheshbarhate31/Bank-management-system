@@ -8,10 +8,16 @@ from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 from app.model.bank_account import BankAccount
+from flask_jwt_extended import jwt_required
+
+
+transaction_type_1 = "debit"
+transaction_type_2 = "credit"
 
 
 class FundTransferInfo(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add fund transfer in the FundTransfer table"""
@@ -29,8 +35,18 @@ class FundTransferInfo(Resource):
             db.session.commit()
             output = fund_transfer_schema.dump(fund)
             from_account = BankAccount.query.filter(BankAccount.account_number == fund_data['from_account']).first()
+            if not from_account:
+                response = ResponseGenerator(data={}, message="Invalid Account number, from_account", success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
             to_account = BankAccount.query.filter(BankAccount.account_number == fund_data['to_account']).first()
-            transaction_type = TransactionType.query.filter(TransactionType.transaction_type == "debit").first()
+            if not to_account:
+                response = ResponseGenerator(data={}, message="Invalid Account number, to_account",
+                                             success=False,
+                                             status=status.HTTP_400_BAD_REQUEST)
+                return response.error_response()
+            transaction_type = TransactionType.query.filter(
+                TransactionType.transaction_type == transaction_type_1).first()
             if from_account.balance - fund_data['transaction_amount'] > 1000:
                 from_account.balance -= fund_data['transaction_amount']
                 db.session.add(from_account)
@@ -59,6 +75,7 @@ class FundTransferInfo(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the fund transfer"""
@@ -86,6 +103,7 @@ class FundTransferData(Resource):
     """ for FundTransferData GET(single fund transfer detail),
         PUT(update fund transfer), DELETE(delete fund transfer)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single fund transfer  with selected fund transfer id """
@@ -111,13 +129,14 @@ class FundTransferData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the fund transfer """
 
         try:
             data = request.get_json()
-            result = fund_transfer_schema.validate(data)
+            result = fund_transfer_schema.validate(data, partial=True)
             if result:
                 logger.exception(result)
                 response = ResponseGenerator(data={}, message=result,
@@ -144,4 +163,3 @@ class FundTransferData(Resource):
             logger.exception(error)
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
-

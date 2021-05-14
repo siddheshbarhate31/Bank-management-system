@@ -1,17 +1,18 @@
 from app import ma
 from marshmallow.validate import Length, Range, Regexp
-from marshmallow import fields, INCLUDE
+from marshmallow import fields
 from random import randint
 
 name_string = '^[a-zA-Z]*$'
+address_string = '^[a-zA-Z ]*$'
 
 
 class BankAccountSchema(ma.Schema):
     """Adding the Schema validations to the BankAccount """
-    user_id = fields.Int(required=True)
-    account_type_id = fields.Int(required=True)
-    branch_id = fields.Int(required=True)
-    balance = fields.Int(required=True, validate=Range(min=1000, max=50000, error="Amount greater than 1000"))
+    user_id = fields.Int(strict=True, required=True)
+    account_type_id = fields.Int(strict=True, required=True)
+    branch_id = fields.Int(strict=True, required=True)
+    balance = fields.Int(strict=True, required=True, validate=Range(min=1000, max=50000))
 
     class Meta:
 
@@ -19,7 +20,6 @@ class BankAccountSchema(ma.Schema):
 
         fields = ('account_number', 'is_active', 'deleted', 'balance', 'user_id', 'account_type_id', 'branch_id',
                   'created_on', 'balance')
-        unknown = INCLUDE
         load_instance = True
 
 
@@ -36,7 +36,6 @@ def generate_random_number(n):
 class AccountTypeSchema(ma.Schema):
     """Adding the Schema validations to the AccountType """
 
-    id = fields.Int(required=True)
     account_type = fields.String(required=True, validate=(Length(max=20), Regexp(name_string)))
 
     class Meta:
@@ -44,7 +43,6 @@ class AccountTypeSchema(ma.Schema):
         """ Exposed fields """
 
         fields = ('id', 'account_type')
-        unknown = INCLUDE
         load_instance = True
 
 
@@ -55,14 +53,14 @@ accounts_type_schema = AccountTypeSchema(many=True)
 class BranchDetailsSchema(ma.Schema):
     """Adding the Schema validations to the BranchDetails """
 
-    branch_address = fields.Str(required=True, validate=Length(max=100))
+    branch_name = fields.Str(required=True, validate=(Length(max=100), Regexp('^[a-zA-Z ]*$')))
+    branch_address = fields.Str(required=True, validate=(Length(max=100), Regexp('^[a-zA-Z ]*$')))
 
     class Meta:
 
         """ Exposed fields """
 
-        fields = ('branch_id', 'branch_address')
-        unknown = INCLUDE
+        fields = ('branch_id', 'branch_name', 'branch_address')
         load_instance = True
 
 

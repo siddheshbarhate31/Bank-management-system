@@ -1,16 +1,16 @@
 from app import ma
-from marshmallow.validate import Length, Regexp
-from marshmallow import fields, INCLUDE
+from marshmallow.validate import Length, Regexp, Range
+from marshmallow import fields
 
 name_string = '^[a-zA-Z]*$'
 
 
 class AccountTransactionDetailsSchema(ma.Schema):
     """Adding the Schema validations to the AccountTransactionDetails """
-    transaction_amount = fields.Int(required=True)
-    bank_account_id = fields.Int(required=True)
-    transaction_type_id = fields.Int(required=True)
-    fund_id = fields.Int(required=True)
+    transaction_amount = fields.Int(strict=True, required=True)
+    bank_account_id = fields.Int(strict=True, required=True)
+    transaction_type_id = fields.Int(strict=True, required=True)
+    fund_id = fields.Int(strict=True, required=True)
     transaction_status = fields.String(required=True)
 
     class Meta:
@@ -36,7 +36,6 @@ class TransactionTypeSchema(ma.Schema):
         """ Exposed fields """
 
         fields = ('id', 'transaction_type')
-        unknown = INCLUDE
         load_instance = True
 
 
@@ -48,16 +47,15 @@ class FundTransferSchema(ma.Schema):
 
     """Adding the Schema validations to the FundTransfer """
 
-    from_account = fields.Str(required=True, validate=Regexp("^[0-9]{10}$|^[0-9]{12}$"))
-    to_account = fields.Str(validate=Regexp("^[0-9]{10}$|^[0-9]{12}$"))
-    transaction_amount = fields.Int(required=True)
+    from_account = fields.Str(required=True, validate=(Regexp("^[0-9]{10}$|^[0-9]{12}$"), Length(equal=10)))
+    to_account = fields.Str(validate=(Regexp("^[0-9]{10}$|^[0-9]{12}$"), Length(equal=10)))
+    transaction_amount = fields.Int(strict=True, required=True, validate=Range(min=1000, max=50000))
 
     class Meta:
 
         """ Exposed fields """
 
         fields = ('id', 'from_account', 'to_account', 'transaction_amount')
-        unknown = INCLUDE
         load_instance = True
 
 

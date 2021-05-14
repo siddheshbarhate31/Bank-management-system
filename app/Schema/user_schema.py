@@ -1,10 +1,10 @@
 from app import ma
 from marshmallow.validate import Length, Regexp
-from marshmallow import fields, INCLUDE
+from marshmallow import fields
 from app.model.user import User
 
-
 name_string = '^[a-zA-Z]*$'
+address_string = '^[a-zA-Z ]*$'
 
 
 class UserSchema(ma.Schema):
@@ -12,11 +12,11 @@ class UserSchema(ma.Schema):
 
     first_name = fields.Str(required=True, validate=(Length(max=50), Regexp(name_string)))
     last_name = fields.Str(required=True, validate=(Length(max=50), Regexp(name_string)))
-    address = fields.Str(required=True, validate=Length(max=100))
-    mobile_number = fields.String(required=True, validate=Regexp('[7-9][0-9]{9}'))
-    email_id = fields.Email(required=True, validate=Regexp('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'))
+    address = fields.Str(required=True, validate=(Length(max=100), Regexp(address_string)))
+    mobile_number = fields.String(required=True, validate=(Regexp('^[789]\d{9}$'), Length(equal=10)))
+    email_id = fields.Email(required=True)
     password = fields.Str(required=True, validate=Regexp('[A-Za-z0-9@#$%^&+=]{8,}'))
-    user_type_id = fields.Int(required=True)
+    user_type_id = fields.Int(strict=True, required=True)
 
     class Meta:
 
@@ -24,8 +24,6 @@ class UserSchema(ma.Schema):
 
         fields = ('id', 'first_name', 'last_name', 'address', 'mobile_number', 'email_id', 'password',
                   'user_type_id', 'created_on')
-        unknown = INCLUDE
-        load_instance = True
 
 
 def if_email_id_exist(email_id):
@@ -34,10 +32,6 @@ def if_email_id_exist(email_id):
 
 def if_mobile_no_exist(mobile_number):
     return User.query.filter(User.mobile_number == mobile_number).first()
-
-
-def if_password_exist(password):
-    return User.query.filter(User.password == password).first()
 
 
 user_schema = UserSchema()
@@ -59,5 +53,3 @@ class UserTypeSchema(ma.Schema):
 
 user_type_schema = UserTypeSchema()
 users_type_schema = UserSchema(many=True)
-
-
