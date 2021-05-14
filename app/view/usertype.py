@@ -7,10 +7,12 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class UserTypeProfile(Resource):
 
+    @jwt_required()
     def post(self):
 
         """create a user type"""
@@ -36,6 +38,7 @@ class UserTypeProfile(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """get all the user types"""
@@ -62,6 +65,7 @@ class UserTypedata(Resource):
 
     """UserTypeData for GET(single user type), PUT(update user type), DELETE(delete user type)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single user type with selected usertype id"""
@@ -86,6 +90,7 @@ class UserTypedata(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the user type data """

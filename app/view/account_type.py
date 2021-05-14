@@ -7,10 +7,11 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class AccountTypeDetails(Resource):
-
+    @jwt_required()
     def post(self):
 
         """Create account_type in the AccountType table"""

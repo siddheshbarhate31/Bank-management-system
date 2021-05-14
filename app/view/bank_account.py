@@ -13,10 +13,12 @@ from app.model.account_transaction_details import AccountTransactionDetails
 from app.Schema.account_transaction_details_schema import account_transaction_detail_schema
 from app.model.user import User
 from app.model.bank_account import AccountType, BranchDetails
+from flask_jwt_extended import jwt_required
 
 
 class BankAccountDetails(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Create bank account in the BankAccount table"""
@@ -79,6 +81,7 @@ class BankAccountDetails(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the bank accounts"""
@@ -112,6 +115,7 @@ class BankAccountData(Resource):
 
     """BankAccountData for GET(bank account), PUT(update account), DELETE(delete bank account)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of bank account of selected bank account id """
@@ -136,6 +140,7 @@ class BankAccountData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the bank account data """
@@ -172,6 +177,7 @@ class BankAccountData(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def delete(self, id):
 
         """Delete the bank account"""

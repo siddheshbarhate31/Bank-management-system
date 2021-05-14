@@ -8,6 +8,8 @@ from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 from app.model.bank_account import BankAccount
+from flask_jwt_extended import jwt_required
+
 
 transaction_type_1 = "debit"
 transaction_type_2 = "credit"
@@ -15,6 +17,7 @@ transaction_type_2 = "credit"
 
 class FundTransferInfo(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add fund transfer in the FundTransfer table"""
@@ -72,6 +75,7 @@ class FundTransferInfo(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the fund transfer"""
@@ -99,6 +103,7 @@ class FundTransferData(Resource):
     """ for FundTransferData GET(single fund transfer detail),
         PUT(update fund transfer), DELETE(delete fund transfer)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single fund transfer  with selected fund transfer id """
@@ -124,6 +129,7 @@ class FundTransferData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the fund transfer """

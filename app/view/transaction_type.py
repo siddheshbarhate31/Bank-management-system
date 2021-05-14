@@ -7,10 +7,12 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class TransactionTypeDetails(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add transaction type in the TransactionType table"""
@@ -37,6 +39,7 @@ class TransactionTypeDetails(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the details of all the transaction type"""
@@ -65,6 +68,7 @@ class TransactionTypeData(Resource):
     """ for TransactionTypeData GET(single transaction type detail),
         PUT(update transaction type), DELETE(delete transaction type detail)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single transaction type  with selected transaction type id """
@@ -90,6 +94,7 @@ class TransactionTypeData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the Transaction type """

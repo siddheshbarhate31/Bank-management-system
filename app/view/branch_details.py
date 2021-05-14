@@ -7,10 +7,12 @@ from app.common.ResponseGenerator import ResponseGenerator
 from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
+from flask_jwt_extended import jwt_required
 
 
 class BranchData(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add branch_details in the BranchDetails table"""
@@ -37,7 +39,7 @@ class BranchData(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the branch details"""
@@ -65,6 +67,7 @@ class BranchInfo(Resource):
 
     """BranchInfo for GET(single branch detail), PUT(update branch detail), DELETE(delete branch detail)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single branch detail with selected branch id """
@@ -89,6 +92,7 @@ class BranchInfo(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the Branch Data """
@@ -123,6 +127,7 @@ class BranchInfo(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def delete(self, id):
 
         """delete the branch detail of selected branch  id"""

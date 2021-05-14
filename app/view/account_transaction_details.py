@@ -13,6 +13,8 @@ from sqlalchemy import desc
 from app.model.account_transaction_details import TransactionType
 from app.model.account_transaction_details import FundTransfer
 from app.Schema.account_transaction_details_schema import fund_transfer_schema
+from flask_jwt_extended import jwt_required
+
 
 transaction_type_1 = "debit"
 transaction_type_2 = "credit"
@@ -20,6 +22,7 @@ transaction_type_2 = "credit"
 
 class AccountTransactionInfo(Resource):
 
+    @jwt_required()
     def post(self):
 
         """Add account transaction details in the AccountTransactionDetails table"""
@@ -90,6 +93,7 @@ class AccountTransactionInfo(Resource):
             response = ResponseGenerator(data={}, message=error, success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the details of all the account transactions"""
@@ -122,6 +126,7 @@ class AccountTransactionData(Resource):
     """AccountTransactionData for GET(account transaction), PUT(update account transaction),
        DELETE(delete account transaction)"""
 
+    @jwt_required()
     def get(self, id):
 
         """Gives the detail of account transaction of selected bank account id """
@@ -147,6 +152,7 @@ class AccountTransactionData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the account transaction detail """

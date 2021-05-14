@@ -8,30 +8,15 @@ from app.common.Exception import IdNotFound
 from flask_api import status
 from app.common.logging import *
 from app.Schema.user_schema import if_email_id_exist, if_mobile_no_exist
-from functools import wraps
-from flask_jwt_extended import decode_token
 from flask import request
-
-
-def custom_validator(function):
-    @wraps(function)
-    def wrapper(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        resp = decode_token(token)
-        logger.debug(resp)
-        if not token:
-            response = ResponseGenerator(data={}, message="Token Missing",
-                                         success=False, status=status.HTTP_401_UNAUTHORIZED)
-            return response.error_response()
-        return function(*args, **kwargs)
-
-    return wrapper
+from flask_jwt_extended import jwt_required
 
 
 class UserProfile(Resource):
 
     """class UserProfile for POST(create user) and GET(all users)"""
 
+    @jwt_required()
     def post(self):
 
         """Create user in the User table"""
@@ -80,6 +65,7 @@ class UserProfile(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def get(self):
 
         """Provides the data of all the users in the user table"""
@@ -112,7 +98,7 @@ class UserData(Resource):
 
     """UserData for GET(single user), PUT(update user), DELETE(delete user)"""
 
-    @custom_validator
+    @jwt_required()
     def get(self, id):
 
         """Gives the data of single user with selected user_id """
@@ -138,6 +124,7 @@ class UserData(Resource):
                                          status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def put(self, id):
 
         """Update the user data """
@@ -178,6 +165,7 @@ class UserData(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
+    @jwt_required()
     def delete(self, id):
 
         """Delete the user"""
