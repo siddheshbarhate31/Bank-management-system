@@ -1,0 +1,1157 @@
+{
+	"info": {
+		"_postman_id": "146eec65-e67e-4d63-970a-1f69fbc1bf99",
+		"name": "Bank management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "all users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/user",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/user/9",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "single user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/user/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"aditya\",\n    \"last_name\": \"kale\",\n    \"address\": \"Shanti nagar\",\n    \"mobile_number\": \"8907645324\",\n    \"email_id\":\"aditya@gmail.com\",\n    \"password\": \"aditya1234\",\n    \"user_type_id\":3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/user",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"first_name\":\"karan\",\n   \"address\":\"Shanti Nagar\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/user/3",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserType",
+			"item": [
+				{
+					"name": "get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/usertype",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"usertype"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create a user type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_type\": 123\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/usertype",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"usertype"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user type",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_type\": \"other\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/usertype/2",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"usertype",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get single user type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/usertype/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"usertype",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete the usertype",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/usertype/4",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"usertype",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bank_account",
+			"item": [
+				{
+					"name": "all bank accounts details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create bank account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"balance\":10000,\n    \"user_id\": 1,\n    \"account_type_id\": 1,\n    \"branch_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get the bank account of selected id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\":1,\n    \"account_type_id\":2,\n    \"branch_id\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account/3",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update the bank account",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 3,\n    \"account_type_id\": 1,\n    \"branch_id\": 1,\n    \"balance\": 2000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account/4",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete the bank account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account type",
+			"item": [
+				{
+					"name": "get all acount types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_type",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create a account type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_type",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get a single account type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_type/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_type",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_type\": \"saving\",\n    \"id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_type/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_type",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete account type",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_type/2",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_type",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Branch Details",
+			"item": [
+				{
+					"name": "get all branch details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/branch_details",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"branch_details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get single branch detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/branch_details/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"branch_details",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create a branch detail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"branch_name\":\"HDFC Sambhaji Nagar bank\",\n    \"branch_address\":\"Sambhaji Nagar Akurdi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/bank_account",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"bank_account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update branch detail",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"branch_address\": \"Rose villa akurdi  Pune\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/branch_details/3",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"branch_details",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete branch detail",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/branch_details/3",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"branch_details",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "fund transfer",
+			"item": [
+				{
+					"name": "add a fund transfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"om_account\": \"0014196839\",\n    \"to_account\": \"0017959734\",\n    \"transaction_amount\": 50000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/fund_transfer",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"fund_transfer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all fund transfer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_transaction_details",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_transaction_details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get fund transfer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/fund_transfer/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"fund_transfer",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update fund transfer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"source\": \"rose villa akurdi pune\",\n    \"destination\": \"shivaji nagar pune\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/fund_transfer/8",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"fund_transfer",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete fund transfer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/fund_transfer/3",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"fund_transfer",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transaction type",
+			"item": [
+				{
+					"name": "add the transaction type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction_type\":\"credit\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/transaction_type",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"transaction_type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all transaction types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/transaction_type",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"transaction_type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transaction type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/transaction_type/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"transaction_type",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update transaction type",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction_type\":\"debit\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/transaction_type/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"transaction_type",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "account transaction details",
+			"item": [
+				{
+					"name": "add the account transaction details",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction_amount\":\"20000\",\n    \"bank_account_id\":1,\n    \"transaction_type_id\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_transaction_details",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_transaction_details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all account transaction details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_transaction_details",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_transaction_details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get account transaction detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_transaction_details/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_transaction_details",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete account transaction detail",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/account_transaction_details/4",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"account_transaction_details",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mini statement",
+			"item": [
+				{
+					"name": "10 mini statment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/mini_statement/1",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"mini_statement",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Login & Logout",
+			"item": [
+				{
+					"name": "User Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_id\":\"karan12@gmail.com\",\n    \"password\":\"Karan$123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:5000/login",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYxOTUyMTA5OCwianRpIjoiNjkxOGQxYjUtMTA3Ni00OTUzLTlkOGYtNzg1MDdkNjA1MzFhIiwibmJmIjoxNjE5NTIxMDk4LCJ0eXBlIjoiYWNjZXNzIiwic3ViIjp7ImVtYWlsIjoia2FyYW4xMTJAZ21haWwuY29tIiwicGFzc3dvcmQiOiJrYXJhbjEyMzQifSwiZXhwIjoxNjE5NTIyODk4fQ.M22LvhI4XLxYVL91mjZAjSTeLlSrEUF7hqKJ3rZMlUc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:5000/logout",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

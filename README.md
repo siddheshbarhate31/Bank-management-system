@@ -1,24 +1,33 @@
 # Bank-management-system
 
-##Add the tables in the database
+##Version:
+  * Project have the version as:
+    
+    Python 3.8.5
+##Virtual Environment:
+* ### Install virtual environment:
+  * For venv we need to install the command in required directory we want:
+   
+        $ pip install virtualenv
+    
+* ### Activate virtual environment:
+  * After installation to activate the venv use command:
 
-We can add the tables in the database in two methods:
 
-1-By running these commands: 
+    source /home/siddhesh/PycharmProjects/Project/venv/bin/activate
 
-    from app import db;
-    from app.model import user;
-    from app.model import bank_account;
-    from app.mddel import account_transaction_details;
-But, if we want to add new column in the table we have to drop all the tables and the data is also lost.
+##Install Requirement.txt:
+ * To install requirement.txt activate the venv and the path where need to be installed with following command:
+       
+        pip freeze > requirement.txt
 
-2.Using the flask-script and flask-migrate:
+##Installations of the packages:
+ * As we have requirement.txt added, it have all the required packages for this system need to run only this command for installations
+   
+        pip install -r requirements.txt
 
-###Installation of flask-script and flask-migrate:
-     pip install flask-script;
-     pip install flask-migrate;
-
-Import these in the init.py and run.py and it handles the database migration by running the migration commands.
+## Adding the tables in the database:
+ * We need the flask-script and flask-migrate.
 
 ##Migration commands
 
@@ -35,10 +44,9 @@ Upgrade to a later version
 - Using these data migration is done and we can add new column in the table using migration commands without losing any data
 - And, can also create table or update it without dropping all the tables.
 
-##-Have made the collection of APIs in postman
+## Postman collection of the APIs:
+  * Have added the postman collection json file in the git repo.
+    
 
+    cd /home/siddhesh/PycharmProjects/Project/Bank management system.postman_collection.json
 
- https://www.getpostman.com/collections/c49ee49f5cf73a8b014a
-
-
-        
