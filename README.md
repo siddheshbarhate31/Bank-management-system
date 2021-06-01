@@ -5,7 +5,9 @@
     
     Python 3.8.5
 ##Virtual Environment:
+
 * ### Install virtual environment:
+  * If you have  added any additional package in project then you can create new requirements file
   * For venv we need to install the command in required directory we want:
    
         $ pip install virtualenv

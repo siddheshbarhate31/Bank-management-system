@@ -7,9 +7,13 @@ from datetime import timedelta
 from flask_migrate import Migrate
 from app.model import *
 from flask_script import Manager
+from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Siddesh@123@localhost/user'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{}:{}@{}/{}'.format(environ.get('DATABASE_USERNAME'),
+                                                                             environ.get('DATABASE_PASSWORD'),
+                                                                             environ.get('DATABASE_HOST'),
+                                                                             environ.get('DATABASE'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["JWT_SECRET_KEY"] = "SiddeshSecretBankManagementSystemProject1234"
 ACCESS_EXPIRES = timedelta(minutes=30)
