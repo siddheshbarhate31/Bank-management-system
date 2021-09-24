@@ -52,6 +52,9 @@ class Login(Resource):
                                              success=False, status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             user = User.query.filter_by(email_id=user_email_id).first()
+            id = user.id
+            if user.is_deleted == 1:
+                return "user is bing deleted"
             if not user:
                 logger.warning("Invalid user email entered")
                 response = ResponseGenerator(data={}, message="Invalid user email entered",
@@ -60,9 +63,9 @@ class Login(Resource):
             if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                 access_token = create_access_token(identity={'email_id': user_email_id, 'password': password})
                 logger.info("Successfully Logged in")
-                response = ResponseGenerator(data={"access_token": access_token},
+                response = ResponseGenerator(data={"access_token": access_token, 'id': id},
                                              message="You are successfully Logged in!", success=True,
-                                             status=status.HTTP_201_CREATED)
+                                             status=status.HTTP_200_OK)
                 return response.success_response()
             else:
                 logger.warning("Invalid password entered")

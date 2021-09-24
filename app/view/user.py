@@ -16,7 +16,7 @@ class UserProfile(Resource):
 
     """class UserProfile for POST(create user) and GET(all users)"""
 
-    @jwt_required()
+    #@jwt_required()
     def post(self):
 
         """Create user in the User table"""
@@ -55,7 +55,6 @@ class UserProfile(Resource):
             db.session.add(user)
             db.session.commit()
             output = user_schema.dump(user)
-            logger.info("User data successfully created")
             response = ResponseGenerator(data=output, message="User data successfully created", success=True,
                                          status=status.HTTP_201_CREATED)
             return response.success_response()
@@ -65,9 +64,8 @@ class UserProfile(Resource):
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
 
-    @jwt_required()
+    #@jwt_required()
     def get(self):
-
         """Provides the data of all the users in the user table"""
         try:
             all_users = User.query.filter(User.is_deleted == 0)
@@ -137,14 +135,14 @@ class UserData(Resource):
                                              status=status.HTTP_400_BAD_REQUEST)
                 return response.error_response()
             user = User.query.filter(User.id == id, User.is_deleted == 0).first()
-            hashed = bcrypt.hashpw(data.get('password', user.password).encode('utf-8'), bcrypt.gensalt())
+            # hashed = bcrypt.hashpw(data.get('password', user.password).encode('utf-8'), bcrypt.gensalt())
             if user:
                 user.first_name = data.get('first_name', user.first_name)
                 user.last_name = data.get('last_name', user.last_name)
                 user.address = data.get('address', user.address)
                 user.mobile_number = data.get('mobile_number', user.mobile_number)
                 user.email_id = data.get('email_id', user.email_id)
-                user.password = hashed
+                user.password = data.get('password', user.password)
                 user.user_type_id = data.get('user_type_id', user.user_type_id)
                 db.session.commit()
                 output = user_schema.dump(user)
@@ -167,23 +165,15 @@ class UserData(Resource):
 
     @jwt_required()
     def delete(self, id):
-
         """Delete the user"""
         try:
-            user = User.query.get(id)
-            if user:
-                if user.is_deleted == 1:
-                    logger.info("User is already deleted")
-                    return "User is already deleted"
-                elif user.is_deleted == 0:
-                    user.is_deleted = 1
-                    db.session.commit()
-                    logger.info("User data deleted successfully")
-                    response = ResponseGenerator(data=user, message="User data deleted successfully", success=True,
-                                                 status=status.HTTP_200_OK)
-                    return response.success_response()
-            else:
+            user = User.query.filter(User.id == id, User.is_deleted == 0).first()
+            if not user:
                 raise IdNotFound('id not found:{}'.format(id))
+            user.is_deleted = 1
+            db.session.commit()
+            logger.info("User data deleted successfully")
+            return "User data deleted successfully"
         except IdNotFound as error:
             logger.exception(error.message)
             response = ResponseGenerator(data={}, message=error.message, success=False,
@@ -194,3 +184,31 @@ class UserData(Resource):
             response = ResponseGenerator(data={}, message=error,
                                          success=False, status=status.HTTP_400_BAD_REQUEST)
             return response.error_response()
+        # try:
+        #     user = User.query.get(id)
+        #     if user:
+        #         if user.is_deleted == 1:
+        #             logger.info("User is already deleted")
+        #             return "User is already deleted"
+        #         elif user.is_deleted == 0:
+        #             user.is_deleted = 1
+        #             db.session.commit()
+        #             logger.info("User data deleted successfully")
+        #             response = ResponseGenerator(data=user, message="User data deleted successfully", success=True,
+        #                                          status=status.HTTP_200_OK)
+        #             return response.success_response()
+        #     else:
+        #         raise IdNotFound('id not found:{}'.format(id))
+        # except IdNotFound as error:
+        #     logger.exception(error.message)
+        #     response = ResponseGenerator(data={}, message=error.message, success=False,
+        #                                  status=status.HTTP_404_NOT_FOUND)
+        #     return response.error_response()
+        # except Exception as error:
+        #     logger.exception(error)
+        #     response = ResponseGenerator(data={}, message=error,
+        #                                  success=False, status=status.HTTP_400_BAD_REQUEST)
+        #     return response.error_response()
+
+        ###################################
+
